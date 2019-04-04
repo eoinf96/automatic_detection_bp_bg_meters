@@ -2,11 +2,6 @@
 
 The algorithms are defined in "Automated method for detecting and reading seven-segment digits from images of blood glucose meters and blood pressure monitors" - E.Finnegan
 
-* Item 1
-* Item 2
-  * Sub Item 1
-  * Sub Item 2
-
 The process is as follows:
 
 * Extract blobs (regions of an image that are likely to be segemnts).
