@@ -1,15 +1,8 @@
-function [Reading] = CombineDigits_BG(LabelsStats, fminor, fminor_one, fmajor, plot_flag)
+function [Reading] = CombineDigits(LabelsStats, fminor, fminor_one, fmajor, plot_flag)
 %plot is a flag saying whether to make plots of not
 global HEIGHT
 global NewWidth
 
-
-%% First 
-
-
-
-
-%%
 
 %First find the order of values from left to right.
 Output = [LabelsStats.Value];
@@ -106,17 +99,6 @@ CollideTotalNew(1:n+1:end)=diag(CollideTotal');
 %find the graph indicating which digits to be combined
 G = graph(CollideTotalNew);
 
-%% Filter 
-
-AveSWT = arrayfun(@(k) mean(regionStats(k).swtMap), 1:numel(regionStats))';
-AveSWT(isnan(AveSWT)) = [];
-SWTGlobalAve = mean(AveSWT);
-
-HueCond = repmat(AveHue, [1,length(AveHue)]);
-HueCondThresh = abs(HueCond - HueCond')<T_H;
-
-SWTCond = repmat(AveSWT, [1,length(AveSWT)]);
-SWTCondThresh = (abs(SWTCond - SWTCond')/SWTGlobalAve)<T_SW;
 
 
 %% Filter the possible readings by number of digits in the reading and the expected value of the reading.
@@ -297,7 +279,7 @@ for k=1:maxk
     ypos=y0(k);
     radm=ra(k);
     radn=rb(k);
-    an=ang(k);
+    an=ang(k)
   else
     rada=ra(fix((k-1)/size(x0,1))+1);
     radb=rb(fix((k-1)/size(x0,1))+1);

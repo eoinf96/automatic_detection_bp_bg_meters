@@ -17,8 +17,8 @@
 %
 % LITERATURE
 % ----------
-% Automated method for detecting and reading seven-segment digits from
-% images of blood glucose meters and blood pressure monitors - E.Finnegan
+% Automated method for detecting and reading seven segment digits from 
+% images of blood glucose metres and blood pressure monitors - E.Finnegan
 %
 % ________________________________________________________________________
 
@@ -53,12 +53,13 @@ up.params = set_algorithm_parameters;
 %%%%% Blob filtering weights -- load your own here if trained on a
 %%%%% different dataset
 if strcmp(up.device_type, 'BG')
-    load('blob_filtering_weights_one_touch')
+    blob_filtering_weights_loc = './weights/blob_filtering_weights_one_touch.mat';
 elseif strcmp(up.device_type, 'BP')
-    load('blob_filtering_weights_microlife')
+    blob_filtering_weights_loc = './weights/blob_filtering_weights_microlife.mat';
 else
-    warning('The device type is unkown - only BG or BP are supported')
+    error('The device type is unkown - only BG or BP are supported')
 end
+load(blob_filtering_weights_loc)
 
 up.params.blob_filtering_weights = w;
 
