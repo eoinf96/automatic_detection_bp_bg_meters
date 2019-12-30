@@ -53,9 +53,9 @@ up.params = set_algorithm_parameters;
 %%%%% Blob filtering weights -- load your own here if trained on a
 %%%%% different dataset
 if strcmp(up.device_type, 'BG')
-    blob_filtering_weights_loc = './weights/blob_filtering_weights_one_touch.mat';
+    blob_filtering_weights_loc = './data/weights/blob_filtering_weights_one_touch.mat';
 elseif strcmp(up.device_type, 'BP')
-    blob_filtering_weights_loc = './weights/blob_filtering_weights_microlife.mat';
+    blob_filtering_weights_loc = './data/weights/blob_filtering_weights_microlife.mat';
 else
     error('The device type is unkown - only BG or BP are supported')
 end
