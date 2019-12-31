@@ -170,9 +170,11 @@ end
 
 function res = gausConv3D(kernelWidth, kernelHeight, kernelDepth, ...
     derivedSigmaSpatial, derivedSigmaRange, grid)
+
     kernelX = fspecial('Gaussian', [kernelWidth 1], derivedSigmaSpatial);
     kernelY = fspecial('Gaussian', [1 kernelHeight], derivedSigmaSpatial);
     kernelZ = fspecial('Gaussian', [kernelDepth 1], derivedSigmaRange);
+
 
     k = zeros([1, 1, kernelDepth]);
     k(:) = kernelZ;
@@ -182,6 +184,8 @@ function res = gausConv3D(kernelWidth, kernelHeight, kernelDepth, ...
     data2 = convn(data2, kernelY, 'same');
     data2 = convn(data2, k, 'same');
     res = data2;
+    
+
 end
 
 

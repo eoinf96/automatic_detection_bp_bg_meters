@@ -22,7 +22,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 18-Oct-2018 18:24:11
+% Last Modified by GUIDE v2.5 30-Dec-2019 23:04:36
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -116,36 +116,47 @@ axes(handles.UploadedImage)
 imshow(File)
 
 %%%% Get parameters %%%%%%%
-sigma_s_b = str2num(get(handles.sigmabs,'String'));
-sigma_r_b = str2num(get(handles.sigmabr,'String'));
-gamma_b = str2num(get(handles.gammab,'String'));
-T = str2num(get(handles.t,'String'));
-Delta = str2num(get(handles.delta,'String'));
-sigma_s_m = str2num(get(handles.sigmams,'String'));
-sigma_r_m = str2num(get(handles.sigmamr,'String'));
-gamma_m = str2num(get(handles.gammam,'String'));
-k = str2num(get(handles.k,'String'));
-alpha = str2num(get(handles.alpha,'String'));
-f_ma = str2num(get(handles.fma,'String'));
-f_mi = str2num(get(handles.fmi,'String'));
-T_H = str2num(get(handles.th,'String'));
-T_SW = str2num(get(handles.tsw,'String'));
-T_D = str2num(get(handles.td,'String'));
+
+
+%%%%% Binarisation path
+params.blob_extraction.Sauv.sigma_s         = str2double(get(handles.sigmabs,'String'));
+params.blob_extraction.Sauv.sigma_r         = str2double(get(handles.sigmabr,'String'));
+params.blob_extraction.Sauv.gamma           = str2double(get(handles.gammab,'String'));
+params.blob_extraction.Sauv.k               = str2double(get(handles.k,'String'));
+params.blob_extraction.Sauv.alpha           = str2double(get(handles.alpha,'String'));
+
+%%%%% MSER path
+params.blob_extraction.MSER.sigma_s         = str2double(get(handles.sigmams,'String'));
+params.blob_extraction.MSER.sigma_r         = str2double(get(handles.sigmamr,'String'));
+params.blob_extraction.MSER.gamma           = str2double(get(handles.gammam,'String'));
+params.blob_extraction.MSER.T               = str2double(get(handles.t,'String'));
+params.blob_extraction.MSER.Delta           = str2double(get(handles.delta,'String'));
+
+%%%%% Blob clustering
+params.blob_clustering.major_axis           = str2double(get(handles.fma_blob,'String'));
+params.blob_clustering.minor_axis           = str2double(get(handles.fmi_blob,'String'));
+
+params.blob_clustering.thresholds.Hue       = str2double(get(handles.th,'String'));
+params.blob_clustering.thresholds.SW        = str2double(get(handles.tsw,'String'));
+params.blob_clustering.thresholds.D         = str2double(get(handles.td,'String'));
+
+%%%%% Digit combining
+params.digit_clustering.minor_axis          = str2double(get(handles.fmi_digit,'String'));
+params.digit_clustering.minor_axis_one      = str2double(get(handles.fmi_digit_one,'String'));
+params.digit_clustering.major_axis          = str2double(get(handles.fma_digit,'String'));
+
+params.digit_clustering.thresholds.Hue      = str2double(get(handles.tH_digit,'String'));
+params.digit_clustering.thresholds.h        = str2double(get(handles.th_digit,'String'));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+params.device_type = get(handles.listboxmeter,'String');
 
+Reading = get_reading_GUI(img,params);
 
-Meter = get(handles.listboxmeter,'String');
-
-if strcmp(Meter, 'Blood Glucose')
-    Reading = BG_GUI(File,  sigma_s_b, sigma_r_b, gamma_b, T, Delta, sigma_s_m, sigma_r_m, gamma_m, k, alpha, f_ma, f_mi, T_H, T_SW, T_D, handles.FinalImage);
-    
+if strcmp(params.device_type, 'Blood Glucose')
     Str = sprintf('Estimated Reading Value: %.1f \n', Reading);
-else
-    Reading = BP_GUI(File,  sigma_s_b, sigma_r_b, gamma_b, T, Delta, sigma_s_m, sigma_r_m, gamma_m, k, alpha, f_ma, f_mi, T_H, T_SW, T_D, handles.FinalImage);
-    
+else  
     Str = sprintf('Estimated Reading Value: \n Systolic Blood Pressure:  %.0f, \n Diastolic Blood Pressure:  %.0f, \n Heart Rate:  %.0f \n', Reading(end-2:end));
-
 end
 
 set(handles.text2, 'String', Str);
@@ -221,18 +232,18 @@ end
 
 
 
-function fma_Callback(hObject, eventdata, handles)
-% hObject    handle to fma (see GCBO)
+function fma_blob_Callback(hObject, eventdata, handles)
+% hObject    handle to fma_blob (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of fma as text
-%        str2double(get(hObject,'String')) returns contents of fma as a double
+% Hints: get(hObject,'String') returns contents of fma_blob as text
+%        str2double(get(hObject,'String')) returns contents of fma_blob as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function fma_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to fma (see GCBO)
+function fma_blob_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to fma_blob (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -244,18 +255,18 @@ end
 
 
 
-function fmi_Callback(hObject, eventdata, handles)
-% hObject    handle to fmi (see GCBO)
+function fmi_blob_Callback(hObject, eventdata, handles)
+% hObject    handle to fmi_blob (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of fmi as text
-%        str2double(get(hObject,'String')) returns contents of fmi as a double
+% Hints: get(hObject,'String') returns contents of fmi_blob as text
+%        str2double(get(hObject,'String')) returns contents of fmi_blob as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function fmi_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to fmi (see GCBO)
+function fmi_blob_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to fmi_blob (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -559,18 +570,18 @@ set(handles.fullfile, 'String', File);
 
 
 
-function edit22_Callback(hObject, eventdata, handles)
-% hObject    handle to edit22 (see GCBO)
+function fma_digit_Callback(hObject, eventdata, handles)
+% hObject    handle to fma_digit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit22 as text
-%        str2double(get(hObject,'String')) returns contents of edit22 as a double
+% Hints: get(hObject,'String') returns contents of fma_digit as text
+%        str2double(get(hObject,'String')) returns contents of fma_digit as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit22_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit22 (see GCBO)
+function fma_digit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to fma_digit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -582,18 +593,87 @@ end
 
 
 
-function edit23_Callback(hObject, eventdata, handles)
-% hObject    handle to edit23 (see GCBO)
+function fmi_digit_Callback(hObject, eventdata, handles)
+% hObject    handle to fmi_digit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit23 as text
-%        str2double(get(hObject,'String')) returns contents of edit23 as a double
+% Hints: get(hObject,'String') returns contents of fmi_digit as text
+%        str2double(get(hObject,'String')) returns contents of fmi_digit as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit23_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit23 (see GCBO)
+function fmi_digit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to fmi_digit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function f_mi_one_digit_Callback(hObject, eventdata, handles)
+% hObject    handle to f_mi_one_digit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of f_mi_one_digit as text
+%        str2double(get(hObject,'String')) returns contents of f_mi_one_digit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function f_mi_one_digit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to f_mi_one_digit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function tH_digit_Callback(hObject, eventdata, handles)
+% hObject    handle to tH_digit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of tH_digit as text
+%        str2double(get(hObject,'String')) returns contents of tH_digit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function tH_digit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to tH_digit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function th_digit_Callback(hObject, eventdata, handles)
+% hObject    handle to th_digit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of th_digit as text
+%        str2double(get(hObject,'String')) returns contents of th_digit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function th_digit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to th_digit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 

@@ -24,7 +24,7 @@
 
 %%
 close all
-clear all
+clear
 clc
 %%
 
@@ -32,26 +32,34 @@ t_start = cputime;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Set universal parameters
 up.rand_flag = true;
-up.plot_flag = false;
+up.plot_flag = true;
 up.device_type = 'BG';
+up.device_name = 'OneTouch';
 
 
 
-%Add function path to the working path
-up.paths.function_path = 'aux_functions';
+%Add functions path to the working path
+up.paths.function_path = './aux_functions';
 addpath(genpath(up.paths.function_path));
 
 %path to the directory containing the images
-up.paths.image_folder = '/home/sjoh4091/Documents/4YP/Images/BGMeters/OneTouch/Test__';
+image_folder_root = './data/images/';
 
+up.paths.image_folder = [image_folder_root, up.device_name, '/Train'];
+
+
+%Check that the folder exists
+if ~exist(up.paths.image_folder, 'dir')
+   error('Image folder does not exist') 
+end
 
 %Edit the function set_algorithm_parameters to edit the parameters of the
 %algorithms used.
 up.params = set_algorithm_parameters;
 
 
-%%%%% Blob filtering weights -- load your own here if trained on a
-%%%%% different dataset
+% Blob filtering weights -- load your own here if trained on a
+% different dataset
 if strcmp(up.device_type, 'BG')
     blob_filtering_weights_loc = './data/weights/blob_filtering_weights_one_touch.mat';
 elseif strcmp(up.device_type, 'BP')
@@ -59,14 +67,14 @@ elseif strcmp(up.device_type, 'BP')
 else
     error('The device type is unkown - only BG or BP are supported')
 end
-load(blob_filtering_weights_loc)
+load(blob_filtering_weights_loc, 'w')
 
 up.params.blob_filtering_weights = w;
 
 
 %%%%% Digit classification weights -- load your own here if trained on a
 %%%%% different dataset
-load('digit_classification_weights.mat', 'W')
+load('./data/weights/digit_classification_weights.mat', 'W')
 up.params.digit_classification_weights = W; 
 
 %clear unneeded variables
@@ -87,7 +95,7 @@ if up.rand_flag
     %clear unneeded variables
     clear FileList index
 else
-   up.paths.image_name = 'IMG_8468.JPG'; %Simple one
+   up.paths.image_name = 'IMG_8468.JPG'; 
    up.paths.image_path = strcat(strcat(up.paths.image_folder, '/'), up.paths.image_name);
 end
 
