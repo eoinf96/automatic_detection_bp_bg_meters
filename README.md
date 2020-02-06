@@ -10,18 +10,13 @@ The process is as follows:
 * Classify the digits by their value from 0-9
 * Combine digits to form physiological readings
 
-****
-Image dataset to be uploaded using: https://docs.floydhub.com/guides/create_and_upload_dataset/
-****
-
-
-Example images of blood glucose meters and blood pressure monitors are located at ???, these images have been used to develop the algorithms presented in this repository. It is recommended for the user to download these datasets and copy the path to it as the variable up.paths.image_folder on line 45 of compute_reading_from_image.m
+Image dataset to be downloaded from: https://cameralab.eng.ox.ac.uk/resources.html, these images have been used to develop the algorithms presented in this repository. It is recommended for the user to download these images and copy to /data/images in the repository folder.
 
 For use on a new dataset it is suggested that the user changes the parameters found in set_algorithm_parameters.m
 
+The adjusted parameters can be tested using the GUI (still in development). The optimum parameters can be found by using the method in the original paper.
 
-
-*** The adjusted parameters can be tested using the GUI. The optimum parameters can be found by using the method in the original paper
+To compute a reading from an image run the code compute_reading_from_image.m. The image path is set as up.paths.image_folder on line 48. The output is printed to the command window.
 
 
 =======================================
@@ -32,7 +27,6 @@ For use on a new dataset it is suggested that the user changes the parameters fo
 
 
 The code provided requires the following products be installed:
-
 
 MATLAB R2018b
 MATLAB R2018b: Image processing Toolbox
